@@ -2,7 +2,7 @@
 #compare l'arboresence du dossier cherche les fichiers ayant le meme nom et les sycrhise en fonction de leur date de modif
 
 folder1=$1
-folder2=$3
+folder2=$2
 
 
 nb1fichier=$(find $1 -type f | wc -l | awk '{print $1}')
