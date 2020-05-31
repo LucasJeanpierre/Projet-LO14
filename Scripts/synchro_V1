@@ -1,10 +1,10 @@
 #!/bin/bash
-#compare l'arboresence des 2 dossiers, verifie si des fichiers sont présents sur les 2 dossiers et remplace l'ancien par la nouveau
+#compare l'arboresence des 2 dossiers, verifie si des fichiers sont présents sur les 2 dossiers et remplace l'ancien par le nouveau
 #si un fichier n'est pas présent dans l'autre dossier, le copie le fichier dans l'autre dossier
+
 folder1=$1
 folder2=$2
 historique=""
-
 
 for fich in `ls $folder1`
 do
