@@ -1,13 +1,6 @@
 #!/bin/bash
 #Test2
 #retourne la date et l heure de modification du fichier
-#stat content1.txt | tail -2 | head -1
-#awk 'BEGIN{ FS = " "; OFS=" "} {print $2}' tempo
-#33 => modify
-#34 => modify day
-#35 => modify hour
-madate=$(stat $1)
-jour=$(echo $madate | awk 'BEGIN{ FS = " "; OFS=" "} {print $33}')
-content=$(echo $madate | awk 'BEGIN{ FS = " "; OFS=" "} {print $34}')
-heure=$(echo $content | awk 'BEGIN{ FS = "."} {print $1}')
+jour=$(stat $1 | awk ' $1=="Modify:" {print $2}')
+heure=$(stat $1 | awk ' $1=="Modify:" {print $3}')
 echo "Ce fihier a ete mofifie a $heure le $jour" 
