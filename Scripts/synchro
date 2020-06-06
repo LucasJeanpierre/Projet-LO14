@@ -38,7 +38,7 @@ do
                 #On écrit le nom du fichier que l'on vient de traiter dans l'historique pour ne pas le remodifier par la suite
                 historique="${historique} $fich"
         else
-                isinotherfolder="{find "$2" -type d -name "$fich")
+                isinotherfolder=$(find "$2" -type d -name "$fich")
                 echo "isinotherfolder"
 
                 if [[ "isinotherfolder" != "" ]]
