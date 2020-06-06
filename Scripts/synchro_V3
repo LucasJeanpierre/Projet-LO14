@@ -10,7 +10,7 @@ stat -c%B test
 stat -c%y test
 
 
-name="name :"$(stat -c%n $fich)
+name="name:"$(stat -c%n $fich)
 mode="mode: "$(stat -c%a $fich)
 taille="taille: "$(stat -c%B $fich)
 date="date: "$(stat -c%y $fich)
