@@ -6,7 +6,7 @@ historique=""
 function synchro() {
 for fich in `ls $1`
 do
-        typedefich=$(file "$1/$fich | awk 'BEGIN{FS=": "} {print $2}')
+        typedefich=$(file "$1/$fich" | awk 'BEGIN{FS=": "} {print $2}')
         echo $typedefich
 
         if [[ "$typedefich" != "directory" ]]
