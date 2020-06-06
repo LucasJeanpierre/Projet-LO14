@@ -1,0 +1,10 @@
+#!\bin\bash
+
+#modes :
+stat -c%a test
+
+#taille :
+stat -c%B test
+
+#date de modif :
+stat -c%y test
