@@ -60,7 +60,7 @@ function synchro() {
         #meme princpie que la boucle d'avant mais cette fois ci on verife juste si les fichiers n'existent pas dans l'autre dossier et donc si il n'a pas été traité
         for fich in `ls $2`
         do
-                typedefich=$(file "$1/$fich" | awk 'BEGIN{FS=": "} {print $2}')
+                typedefich=$(file "$2/$fich" | awk 'BEGIN{FS=": "} {print $2}')
                 echo $typedefich
 
                 if [[ "$typedefich" != "directory" ]]
