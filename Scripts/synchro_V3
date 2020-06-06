@@ -8,3 +8,13 @@ stat -c%B test
 
 #date de modif :
 stat -c%y test
+
+
+name="name :"$(stat -c%n test)
+mode="mode: "$(stat -c%a test)
+taille="taille: "$(stat -c%B test)
+date="date: "$(stat -c%y test)
+
+line="${name} ${mode} ${taille} ${date}"
+
+echo $line >> journal
