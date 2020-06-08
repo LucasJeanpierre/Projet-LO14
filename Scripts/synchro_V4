@@ -17,11 +17,12 @@ function ecrirejournal() {
 }
 
 function comparejournal() {
-        line=$(grep ":$1 " journal)
-        mode=$(echo $line | awk 'BEGIN{FS=" "} {print $2}')
-        taille=$(echo $line | awk 'BEGIN{FS=" "} {print $4}')
-        date=$(echo $line | awk 'BEGIN{FS=" "} {print $6}')
+        line=$(grep "$1" journal)
+        mode=$(echo $line | awk 'BEGIN{FS=" "} {print $4}')
+        taille=$(echo $line | awk 'BEGIN{FS=" "} {print $6}')
+        date=$(echo $line | awk 'BEGIN{FS=" "} {print $8}')
 
+        echo "line : $line"
         echo "mode : $mode"
         echo "taille : $taille"
         echo "date : $date"
@@ -53,7 +54,7 @@ function synchro() {
 
                                 echo "$fich est dans les 2 dossier"
                                 #on compare leurs date de modif et on remplace le plus vieux par le plus recent
-                                comparejournal $1/$fich
+                                comparejournal $folder/$fich
                                 if [[ $1/$fich -ot $2/$fich ]]
                                 then
                                         echo "Le fichier du dossier $2 est plus récent que celui du dossier $1"
