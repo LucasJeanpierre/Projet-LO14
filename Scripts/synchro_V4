@@ -156,10 +156,24 @@ function mkjournal() {
                         isinjournal=$(grep "$folder/$fich " journaltemp)
                         if [[ "$isinjournal" == "" ]]
                         then
+                                if [[ $1/$fich -ot $2/$fich ]]
+                                then
+                                        cp -f $2/$fich $1/$fich
+                                else
+                                        cp -f $1/$fich $2/$fich
+                                fi
                                 ecrirejournal $1/$fich
                         fi
                 else
-                        mkjournal $1/$fich $2/$fich
+                        isinotherfolder=$(find "$2" -type d -name "$fich")
+
+                        if [[ "$isinotherfolder" != "" ]]
+                        then
+                                mkjournal $1/$fich $2/$fich
+                        else
+                                mkdir $2/$fich
+                                mkjournal $1/$fich $2/$fich
+                        fi
                 fi
         done
 
@@ -172,10 +186,24 @@ function mkjournal() {
                         isinjournal=$(grep "$folder/$fich " journaltemp)
                         if [[ "$isinjournal" == "" ]]
                         then
+                                if [[ $1/$fich -ot $2/$fich ]]
+                                then
+                                        cp -f $2/$fich $1/$fich
+                                else
+                                        cp -f $1/$fich $2/$fich
+                                fi
                                 ecrirejournal $1/$fich
                         fi
                 else
-                        mkjournal $2/$fich $1/$fich
+                        isinotherfolder=$(find "$1" -type d -name "$fich")
+
+                        if [[ "$isinotherfolder" != "" ]]
+                        then
+                                mkjournal $2/$fich $1/$fich
+                        else
+                                mkdir $1/$fich
+                                mkjournal $2/$fich $1/$fich
+                        fi
                 fi
         done
 
