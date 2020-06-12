@@ -49,143 +49,155 @@ function comparejournal() {
 
 
 function synchro() {
+        
+        if [[ `ls $1` == "" ]]
+        then    
+                rm -r $1
+        else
+                for fich in `ls $1`
+                do
 
-        for fich in `ls $1`
-        do
+                        echo "Le fichier est $1/$fich" >> journalconflit
+                        typedefich=$(file "$1/$fich" | awk 'BEGIN{FS=": "} {print $2}')
+                        echo "Le type du fichier est : $typedefich" >> journalconflit
 
-                echo "Le fichier est $1/$fich" >> journalconflit
-                typedefich=$(file "$1/$fich" | awk 'BEGIN{FS=": "} {print $2}')
-                echo "Le type du fichier est : $typedefich" >> journalconflit
-                               
-                if [[ "$typedefich" != "directory" ]]
-                then
-
-                        folder=$(echo $1 | awk 'BEGIN{FS="/"; OFS="/"} {$1="";print $0}')
-                        #echo "$folder/$fich "
-                        isinjournal=$(grep "$folder/$fich " journal)
-                        isinjournaltemp=$(grep "$folder/$fich " journaltemp)
-                        #echo "isinjournal : $isinjournal"
-                        #echo "isinjournaltemp : $isinjournaltemp"
-                        
-                        isinfolder2=$(find $2 -type f -name $fich)
-                        if [[ "$isinfolder2" == "" ]] && [[ "$isinjournal" != "" ]]
-                        then
-                                echo "$2/$fich a été supprimé"
-                                
-                        elif [[ "$isinjournal" != "" ]] && [[ "$isinjournaltemp" == "" ]]
+                        if [[ "$typedefich" != "directory" ]]
                         then
 
-                                #echo "$fich est dans le journal"
-                                #on compare leurs date de modif et on remplace le plus vieux par le plus recent
+                                folder=$(echo $1 | awk 'BEGIN{FS="/"; OFS="/"} {$1="";print $0}')
+                                #echo "$folder/$fich "
+                                isinjournal=$(grep "$folder/$fich " journal)
+                                isinjournaltemp=$(grep "$folder/$fich " journaltemp)
+                                #echo "isinjournal : $isinjournal"
+                                #echo "isinjournaltemp : $isinjournaltemp"
 
-                                isfich1sameinjournal=$(comparejournal $1/$fich)
-                                #echo "isfich1sameinjournal : $isfich1sameinjournal"
+                                isinfolder2=$(find $2 -type f -name $fich)
+                                if [[ "$isinfolder2" == "" ]] && [[ "$isinjournal" != "" ]]
+                                then
+                                        echo "$2/$fich a été supprimé"
+                                        rm -r $1/$fich
 
-                                isfich2sameinjournal=$(comparejournal $2/$fich)
-                                #echo "isfich2sameinjournal : $isfich2sameinjournal"
-
-                                if [[ "$isfich1sameinjournal" == "different" ]] || [[ "$isfich2sameinjournal" == "different" ]]
+                                elif [[ "$isinjournal" != "" ]] && [[ "$isinjournaltemp" == "" ]]
                                 then
 
-                                        if [[ $1/$fich -ot $2/$fich ]]
+                                        #echo "$fich est dans le journal"
+                                        #on compare leurs date de modif et on remplace le plus vieux par le plus recent
+
+                                        isfich1sameinjournal=$(comparejournal $1/$fich)
+                                        #echo "isfich1sameinjournal : $isfich1sameinjournal"
+
+                                        isfich2sameinjournal=$(comparejournal $2/$fich)
+                                        #echo "isfich2sameinjournal : $isfich2sameinjournal"
+
+                                        if [[ "$isfich1sameinjournal" == "different" ]] || [[ "$isfich2sameinjournal" == "different" ]]
                                         then
-                                                echo "Le fichier du dossier $2 est plus récent que celui du dossier $1" >> journalconflit
-                                                #echo "2 -> 1"
-                                                cp -a $2/$fich $1/$fich
+
+                                                if [[ $1/$fich -ot $2/$fich ]]
+                                                then
+                                                        echo "Le fichier du dossier $2 est plus récent que celui du dossier $1" >> journalconflit
+                                                        #echo "2 -> 1"
+                                                        cp -a $2/$fich $1/$fich
+                                                else
+                                                        echo "Le fichier du dossier $1 est plus récent que celui du dossier $2" >> journalconflit
+                                                        #echo "1 -> 2"
+                                                        cp -a $1/$fich $2/$fich
+                                                fi
+
+                                                ecrirejournal $1/$fich
+                                                echo "......................................................"
                                         else
-                                                echo "Le fichier du dossier $1 est plus récent que celui du dossier $2" >> journalconflit
-                                                #echo "1 -> 2"
-                                                cp -a $1/$fich $2/$fich
+                                                ecrirejournal $1/$fich
                                         fi
+
+                                elif [[ "$isinjournal" == "" ]] && [[ "$isinjournaltemp" == "" ]]
+                                then
+                                        #si il n'est pas dans l'autre dossier on le copie directement dans l'autre dossier
+                                        echo "$fich n'est que dans le dossier $1, om a été copie rdans $2" >> journalconflit
+                                        cp -f $1/$fich $2/$fich
 
                                         ecrirejournal $1/$fich
                                         echo "......................................................"
-                                else
-                                        ecrirejournal $1/$fich
                                 fi
-
-                        elif [[ "$isinjournal" == "" ]] && [[ "$isinjournaltemp" == "" ]]
-                        then
-                                #si il n'est pas dans l'autre dossier on le copie directement dans l'autre dossier
-                                echo "$fich n'est que dans le dossier $1, om a été copie rdans $2" >> journalconflit
-                                cp -f $1/$fich $2/$fich
-
-                                ecrirejournal $1/$fich
-                                echo "......................................................"
-                        fi
-                        #on ecrit le nom du fichier que l'on viens de traiter dans l'historique pour ne pas le remodifier dans la boucle d'après
-                        #historique="${historique} $fich"
-                else
-                        isinotherfolder=$(find "$2" -type d -name "$fich")
-
-                        if [[ "$isinotherfolder" != "" ]]
-                        then
-                                #echo "Le dossier $1/$fich est présent dans le dossier $2"
-                                echo "//////////////////////////////////////////////////"
-                                synchro "$1/$fich" "$2/$fich"
-                                echo "--------------------------------------------------"
+                                #on ecrit le nom du fichier que l'on viens de traiter dans l'historique pour ne pas le remodifier dans la boucle d'après
+                                #historique="${historique} $fich"
                         else
-                                echo "Le dossier $1/$fich n'est pas présent dans le dossier $2, il a été créer dans $2" >> journalconflit
-                                mkdir $2/$fich
-                                echo "//////////////////////////////////////////////////"
-                                synchro "$1/$fich" "$2/$fich"
-                                echo "--------------------------------------------------"
-                        fi
-                fi
+                                isinotherfolder=$(find "$2" -type d -name "$fich")
 
-        done
+                                if [[ "$isinotherfolder" != "" ]]
+                                then
+                                        #echo "Le dossier $1/$fich est présent dans le dossier $2"
+                                        echo "//////////////////////////////////////////////////"
+                                        synchro "$1/$fich" "$2/$fich"
+                                        echo "--------------------------------------------------"
+                                else
+                                        echo "Le dossier $1/$fich n'est pas présent dans le dossier $2, il a été créer dans $2" >> journalconflit
+                                        mkdir $2/$fich
+                                        echo "//////////////////////////////////////////////////"
+                                        synchro "$1/$fich" "$2/$fich"
+                                        echo "--------------------------------------------------"
+                                fi
+                        fi
+
+                done
+        fi                
 
         #meme princpie que la boucle d'avant mais cette fois ci on verife juste si les fichiers n'existent pas dans l'autre dossier et donc si il n'a pas été traité
-        for fich in `ls $2`
-        do
+        if [[ `ls $2` == "" ]]
+        then    
+                rm -r $2
+        else
+                for fich in `ls $2`
+                do
 
-                #echo "Le fichier est $2/$fich"
-                typedefich=$(file "$2/$fich" | awk 'BEGIN{FS=": "} {print $2}')
-                #echo "Le  type du fichier est $typedefich"
+                        #echo "Le fichier est $2/$fich"
+                        typedefich=$(file "$2/$fich" | awk 'BEGIN{FS=": "} {print $2}')
+                        #echo "Le  type du fichier est $typedefich"
 
-                if [[ "$typedefich" != "directory" ]]
-                then
-
-                        folder=$(echo $1 | awk 'BEGIN{FS="/"; OFS="/"} {$1="";print $0}')
-                        isinjournal=$(grep "$folder/$fich " journal)
-                        isinjournaltemp=$(grep "$folder/$fich " journaltemp)
-                        #echo "isinjournal : $isinjournal"
-                        #echo "isinjournaltemp : $isinjournaltemp"
-
-                        if [[ "$isinjournal" == "" ]] && [[ "$isinjournaltemp" == "" ]]
+                        if [[ "$typedefich" != "directory" ]]
                         then
-                                echo "$2/$fich n'est que dans le dossier $2, il a été créer dans $1" >> journalconflit
-                                cp -a $2/$fich $1/$fich
-                                #historique="${historique} $fich"
-                                ecrirejournal $2/$fich
-                                echo "..............................................................."
 
-                        elif [[ "$isinjournal" != "" ]] && [[ "$isinjournaltemp" == "" ]]
-                        then
-                                echo "$2/$fich n'est que dans le dossier $2 et a été supprimer du dossier $1"
-                                #echo "$2/$fich n'est que dans le dossier $2, il a été créer dans le dossier $1" >> journalconflit
-                                #cp -a $2/$fich $1/$fich
-                                #ecrirejournal $2/$fich
-                                echo ".............................................................."
-                        fi
-                else
-                        isinotherfolder=$(find "$1" -type d -name "$fich")
+                                folder=$(echo $1 | awk 'BEGIN{FS="/"; OFS="/"} {$1="";print $0}')
+                                isinjournal=$(grep "$folder/$fich " journal)
+                                isinjournaltemp=$(grep "$folder/$fich " journaltemp)
+                                #echo "isinjournal : $isinjournal"
+                                #echo "isinjournaltemp : $isinjournaltemp"
 
-                        if [[ "$isinotherfolder" != "" ]]
-                        then
-                                #echo "Le dossier $2/$fich est déjà présnent dans $1"
-                                echo "//////////////////////////////////////////////////"
-                                synchro "$2/$fich" "$1/$fich"
-                                echo "--------------------------------------------------"
+                                if [[ "$isinjournal" == "" ]] && [[ "$isinjournaltemp" == "" ]]
+                                then
+                                        echo "$2/$fich n'est que dans le dossier $2, il a été créer dans $1" >> journalconflit
+                                        cp -a $2/$fich $1/$fich
+                                        #historique="${historique} $fich"
+                                        ecrirejournal $2/$fich
+                                        echo "..............................................................."
+
+                                elif [[ "$isinjournal" != "" ]] && [[ "$isinjournaltemp" == "" ]]
+                                then
+                                        echo "$2/$fich n'est que dans le dossier $2 et a été supprimer du dossier $1"
+                                        rm -r $2/$fich
+                                        #echo "$2/$fich n'est que dans le dossier $2, il a été créer dans le dossier $1" >> journalconflit
+                                        #cp -a $2/$fich $1/$fich
+                                        #ecrirejournal $2/$fich
+                                        echo ".............................................................."
+                                fi
                         else
-                                echo "Le dossier $2/$fich n'est pas présnent dans $1, il a été créer dans $2" >> journalconflit
-                                mkdir $1/$fich
-                                echo "//////////////////////////////////////////////////"
-                                synchro "$2/$fich" "$1/$fich"
-                                echo "--------------------------------------------------"
+                                isinotherfolder=$(find "$1" -type d -name "$fich")
+
+                                if [[ "$isinotherfolder" != "" ]]
+                                then
+                                        #echo "Le dossier $2/$fich est déjà présnent dans $1"
+                                        echo "//////////////////////////////////////////////////"
+                                        synchro "$2/$fich" "$1/$fich"
+                                        echo "--------------------------------------------------"
+                                else
+                                        echo "Le dossier $2/$fich n'est pas présnent dans $1, il a été créer dans $2" >> journalconflit
+                                        mkdir $1/$fich
+                                        echo "//////////////////////////////////////////////////"
+                                        synchro "$2/$fich" "$1/$fich"
+                                        echo "--------------------------------------------------"
+                                fi
                         fi
-                fi
-        done
+                done
+        fi                
 
 }
 
