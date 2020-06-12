@@ -56,7 +56,7 @@ function synchro() {
                 echo "Le fichier est $1/$fich" >> journalconflit
                 typedefich=$(file "$1/$fich" | awk 'BEGIN{FS=": "} {print $2}')
                 echo "Le type du fichier est : $typedefich" >> journalconflit
-
+                               
                 if [[ "$typedefich" != "directory" ]]
                 then
 
@@ -66,9 +66,13 @@ function synchro() {
                         isinjournaltemp=$(grep "$folder/$fich " journaltemp)
                         #echo "isinjournal : $isinjournal"
                         #echo "isinjournaltemp : $isinjournaltemp"
-
-
-                        if [[ "$isinjournal" != "" ]] && [[ "$isinjournaltemp" == "" ]]
+                        
+                        isinfolder2=$(find $2 -type f -name $fich)
+                        if [[ "$isinfolder2" == "" ]] && [[ "$isinjournal" != "" ]]
+                        then
+                                echo "$2/$fich a été supprimé"
+                                
+                        elif [[ "$isinjournal" != "" ]] && [[ "$isinjournaltemp" == "" ]]
                         then
 
                                 #echo "$fich est dans le journal"
@@ -158,10 +162,10 @@ function synchro() {
 
                         elif [[ "$isinjournal" != "" ]] && [[ "$isinjournaltemp" == "" ]]
                         then
-                                #echo "$2/$fich n'est que dans le dossier $2 et a été supprimer du dossier $1"
-                                echo "$2/$fich n'est que dans le dossier $2, il a été créer dans le dossier $1" >> journalconflit
-                                cp -a $2/$fich $1/$fich
-                                ecrirejournal $2/$fich
+                                echo "$2/$fich n'est que dans le dossier $2 et a été supprimer du dossier $1"
+                                #echo "$2/$fich n'est que dans le dossier $2, il a été créer dans le dossier $1" >> journalconflit
+                                #cp -a $2/$fich $1/$fich
+                                #ecrirejournal $2/$fich
                                 echo ".............................................................."
                         fi
                 else
@@ -278,3 +282,4 @@ cat journaltemp > journal
 echo "Synchronisation terminée"
 
 cat ../logo
+
