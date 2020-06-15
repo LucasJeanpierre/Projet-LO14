@@ -93,7 +93,11 @@ function synchro() {
 
                                         if [[ "$isfich1sameinjournal" == "different" ]] || [[ "$isfich2sameinjournal" == "different" ]]
                                         then
-
+                                                if [[ "$isfich1sameinjournal" == "different" ]] && [[ "$isfich2sameinjournal" == "different" ]]
+                                                then
+                                                        echo "Les 2 fichiers ont été modifiés depuis la dernière synchro, on a remplacé par le plus récent" >> journalconflit
+                                                fi
+                                                
                                                 if [[ $1/$fich -ot $2/$fich ]]
                                                 then
                                                         echo "Le fichier du dossier $2 est plus récent que celui du dossier $1, on a donc remplacé le fichier de $1" >> journalconflit
