@@ -265,6 +265,7 @@ function mkjournal() {
                                         ecrirejournal $1/$fich
                                         echo '....................................'
                                 elif [[ "$typedefich1" != "$typedefich2" ]]
+                                then
                                        echo "Il y a conflit, les 2 éléments ne sont pas du même type" >> journalconflit
                                 fi
                         fi
