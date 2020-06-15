@@ -272,6 +272,8 @@ function mkjournal() {
                                 then
                                        echo "Il y a conflit, les 2 éléments ne sont pas du même type" >> journalconflit
                                 fi
+                        else
+                                cp -a $1/$fich $2/$fich
                         fi
                 else
                         isinotherfolder=$(find "$2" -name "$fich")
@@ -327,7 +329,9 @@ function mkjournal() {
                                 elif [[ "$typedefich1" != "$typedefich2" ]]
                                 then
                                          echo "Il y a conflit, les 2 éléments ne sont pas du même type" >> journalconflit
-                                fi               
+                                fi 
+                        else
+                                cp -a $2/$fich $1/$fich
                         fi
                 else
                         isinotherfolder=$(find "$1" -type d -name "$fich")
