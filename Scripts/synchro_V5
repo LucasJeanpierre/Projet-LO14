@@ -241,7 +241,7 @@ function mkjournal() {
 
         for fich in `ls $1`
         do
-                echo "le fichier est $1/$fich"
+                echo "le fichier est $1/$fich" >> journalconflit
                 typedefich=$(file "$1/$fich" | awk 'BEGIN{FS=": "} {print $2}')
                 if [[ "$typedefich" != "directory" ]]
                 then
