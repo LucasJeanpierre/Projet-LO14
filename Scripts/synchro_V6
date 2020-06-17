@@ -269,6 +269,7 @@ function mkjournal() {
                                 fi
                         else
                                 cp -a $1/$fich $2/$fich
+                      
                         fi
                 else
                         isinotherfolder=$(find "$2" -name "$fich")
