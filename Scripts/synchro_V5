@@ -184,20 +184,12 @@ function synchro() {
 
                         if [[ "$isinjournal" == "" ]] && [[ "$isinjournaltemp" == "" ]]
                         then
-                                typedefich1=$(file "$1/$fich" | awk 'BEGIN{FS=": "} {print $2}')
-                                typedefich2=$(file "$2/$fich" | awk 'BEGIN{FS=": "} {print $2}')
-                                
-                                if [[ "$typedefich1" == "$typedefich2" ]]
-                                then
-                                
-                                        echo "$2/$fich n'est que dans le dossier $2, il a été créer dans $1" >> journalconflit
-                                        cp -a $2/$fich $1/$fich
-                                        #historique="${historique} $fich"
-                                        ecrirejournal $2/$fich
-                                        echo "..............................................................."
-                                else
-                                        echo "Il y a conflit, les 2 éléments ne sont pas du même type" >> journalconflit
-                                fi
+   
+                                echo "$2/$fich n'est que dans le dossier $2, il a été créer dans $1" >> journalconflit
+                                cp -a $2/$fich $1/$fich
+                                #historique="${historique} $fich"
+                                ecrirejournal $2/$fich
+                                echo "..............................................................."
 
                         elif [[ "$isinjournal" != "" ]] && [[ "$isinjournaltemp" == "" ]]
                         then
@@ -334,7 +326,7 @@ function mkjournal() {
                                 cp -a $2/$fich $1/$fich
                         fi
                 else
-                        isinotherfolder=$(find "$1" -type d -name "$fich")
+                        isinotherfolder=$(find "$1" -name "$fich")
 
                         if [[ "$isinotherfolder" != "" ]]
                         then
