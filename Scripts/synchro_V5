@@ -209,7 +209,7 @@ function synchro() {
                                 echo ".............................................................."
                         fi
                 else
-                        isinotherfolder=$(find "$1" -type d -name "$fich")
+                        isinotherfolder=$(find "$1" -name "$fich")
 
                         if [[ "$isinotherfolder" != "" ]]
                         then
