@@ -308,7 +308,7 @@ function mkjournal() {
                 then
                         folder=$(echo $1 | awk 'BEGIN{FS="/"; OFS="/"} {$1="";print $0}')
                         isinjournal=$(grep "$folder/$fich " journaltemp)
-                        isinotherfolder=$(find "$2" -name "$fich")
+                        isinotherfolder=$(find "$1" -name "$fich")
                         
                         if [[ "$isinotherfolder" != "" ]]
                         then
